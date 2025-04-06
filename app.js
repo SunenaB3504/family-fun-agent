@@ -915,6 +915,38 @@ function applyTouchFeedback() {
             });
         }
     });
+    
+    // Special handling for family member cards to ensure they work on Android
+    handleFamilyMemberCards();
+}
+
+// Special function to handle family member cards
+function handleFamilyMemberCards() {
+    const familyCards = document.querySelectorAll('.family-member-card');
+    
+    familyCards.forEach(card => {
+        // Clone to remove any existing event listeners
+        const clonedCard = card.cloneNode(true);
+        card.parentNode.replaceChild(clonedCard, card);
+        
+        // Get the person ID from the data attribute
+        const personId = parseInt(clonedCard.getAttribute('data-id'));
+        if (!isNaN(personId)) {
+            // Find the corresponding person object
+            const person = familyMembers.find(p => p.id === personId);
+            if (person) {
+                // Add both click and touch event listeners
+                clonedCard.addEventListener('click', function() {
+                    selectFamilyMember(person);
+                });
+                
+                clonedCard.addEventListener('touchend', function(e) {
+                    e.preventDefault(); // Prevent any default behavior
+                    selectFamilyMember(person);
+                });
+            }
+        }
+    });
 }
 
 // Check if the web app is in standalone mode (launched from home screen)

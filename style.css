@@ -769,5 +769,6 @@ h1, h2 {
     box-shadow: 0 4px 6px rgba(0,0,0,0.2);
     will-change: transform;
     transform: translateZ(0);
+    appearance: none;
     -webkit-appearance: none;
 }
