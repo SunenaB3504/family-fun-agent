@@ -858,23 +858,62 @@ function applyTouchFeedback() {
     const touchElements = document.querySelectorAll('.btn, .family-member-card, .answer-option, .hint-btn');
     
     touchElements.forEach(el => {
+        // Remove any existing event listeners first to avoid duplicates
+        const newEl = el.cloneNode(true);
+        el.parentNode.replaceChild(newEl, el);
+        
         // Add a clear visual indicator for touch
-        el.addEventListener('touchstart', function(e) {
+        newEl.addEventListener('touchstart', function(e) {
             this.classList.add('touch-active');
             
-            // Prevent default for better performance
-            if (!e.target.closest('input, textarea, .milestone-list, .hint-content')) {
+            // Don't prevent default on buttons or they won't fire click events
+            if (!this.classList.contains('btn') && 
+                !e.target.closest('input, textarea, .milestone-list, .hint-content')) {
                 e.preventDefault();
             }
         }, {passive: false});
         
-        el.addEventListener('touchend', function() {
+        newEl.addEventListener('touchend', function() {
             this.classList.remove('touch-active');
         });
         
-        el.addEventListener('touchcancel', function() {
+        newEl.addEventListener('touchcancel', function() {
             this.classList.remove('touch-active');
         });
+        
+        // Ensure a click listener for Android - some devices need this redundancy
+        if (newEl.id === 'start-game-btn') {
+            newEl.addEventListener('click', startGame);
+            // Also add direct touchend handler for Android
+            newEl.addEventListener('touchend', function(e) {
+                e.preventDefault();
+                startGame();
+            });
+        }
+    });
+    
+    // Special direct treatment for the most important buttons to ensure they work
+    const criticalButtons = [
+        { id: 'start-game-btn', handler: startGame },
+        { id: 'start-questions-btn', handler: startQuestions },
+        { id: 'next-question-btn', handler: showNextQuestion },
+        { id: 'back-to-welcome-btn', handler: goToWelcomeScreen }
+    ];
+    
+    criticalButtons.forEach(button => {
+        const el = document.getElementById(button.id);
+        if (el) {
+            // Remove existing handlers first
+            const clonedEl = el.cloneNode(true);
+            el.parentNode.replaceChild(clonedEl, el);
+            
+            // Add direct handlers for both click and touch events
+            clonedEl.addEventListener('click', button.handler);
+            clonedEl.addEventListener('touchend', function(e) {
+                e.preventDefault();
+                button.handler();
+            });
+        }
     });
 }
 
