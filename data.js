@@ -815,8 +815,24 @@ const questionTypes = {
             randomSign + 's'
         ];
         
+        // Get descriptions to use instead of the sign name
+        const zodiacDescriptions = {
+            "Aries": "the ram zodiac sign (March 21 - April 19)",
+            "Taurus": "the bull zodiac sign (April 20 - May 20)",
+            "Gemini": "the twins zodiac sign (May 21 - June 20)",
+            "Cancer": "the crab zodiac sign (June 21 - July 22)",
+            "Leo": "the lion zodiac sign (July 23 - August 22)",
+            "Virgo": "the virgin zodiac sign (August 23 - September 22)",
+            "Libra": "the scales zodiac sign (September 23 - October 22)",
+            "Scorpio": "the scorpion zodiac sign (October 23 - November 21)",
+            "Sagittarius": "the archer zodiac sign (November 22 - December 21)",
+            "Capricorn": "the goat zodiac sign (December 22 - January 19)",
+            "Aquarius": "the water bearer zodiac sign (January 20 - February 18)",
+            "Pisces": "the fish zodiac sign (February 19 - March 20)"
+        };
+        
         return {
-            question: `Which is the correct spelling of the zodiac sign ${randomSign}?`,
+            question: `Which is the correct spelling of ${zodiacDescriptions[randomSign]}?`,
             answers: shuffleArray([randomSign, ...wrongAnswers]),
             correctAnswer: randomSign
         };
@@ -1587,6 +1603,501 @@ const questionTypes = {
             question: `How many years passed between when ${person.name} reached the milestone of ${firstMilestoneName} and ${secondMilestoneName}?`,
             answers: shuffleArray([`${yearDifference} years`, ...wrongDiffs.map(diff => `${diff} years`)]),
             correctAnswer: `${yearDifference} years`
+        };
+    },
+    
+    // New questions for time calculations - hours and minutes
+    hourMinuteAddition: (person) => {
+        // Generate a starting time (hours between 1-11, minutes that are multiples of 5)
+        const startHour = Math.floor(Math.random() * 11) + 1; // 1-11
+        const startMinuteOptions = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55];
+        const startMinuteIndex = Math.floor(Math.random() * startMinuteOptions.length);
+        const startMinute = startMinuteOptions[startMinuteIndex];
+        
+        // Format starting time
+        const startTimeFormatted = `${startHour}:${startMinute.toString().padStart(2, '0')}`;
+        
+        // Minutes to add (between 5 and 60 minutes, in 5-minute intervals)
+        const minutesToAdd = (Math.floor(Math.random() * 12) + 1) * 5; // 5, 10, 15, ..., 60
+        
+        // Calculate result time
+        const totalMinutes = startHour * 60 + startMinute + minutesToAdd;
+        const endHour = Math.floor(totalMinutes / 60) % 12 || 12; // Keep in 12-hour format
+        const endMinute = totalMinutes % 60;
+        
+        // Format result time
+        const correctAnswer = `${endHour}:${endMinute.toString().padStart(2, '0')}`;
+        
+        // Generate wrong answers (off by 5, 10, or 15 minutes)
+        const offsets = [5, 10, 15];
+        const wrongAnswers = offsets.map(offset => {
+            // Randomly add or subtract the offset
+            const offsetDirection = Math.random() > 0.5 ? 1 : -1;
+            const wrongTotalMinutes = totalMinutes + (offset * offsetDirection);
+            
+            const wrongHour = Math.floor(wrongTotalMinutes / 60) % 12 || 12;
+            const wrongMinute = wrongTotalMinutes % 60;
+            return `${wrongHour}:${wrongMinute.toString().padStart(2, '0')}`;
+        });
+        
+        return {
+            question: `If ${person.name}'s class starts at ${startTimeFormatted} and lasts ${minutesToAdd} minutes, what time will it end?`,
+            answers: shuffleArray([correctAnswer, ...wrongAnswers]),
+            correctAnswer: correctAnswer
+        };
+    },
+    
+    hourMinuteSubtraction: (person) => {
+        // Generate an ending time (hours between 1-11, minutes that are multiples of 5)
+        const endHour = Math.floor(Math.random() * 11) + 1; // 1-11
+        const endMinuteOptions = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55];
+        const endMinuteIndex = Math.floor(Math.random() * endMinuteOptions.length);
+        const endMinute = endMinuteOptions[endMinuteIndex];
+        
+        // Format ending time
+        const endTimeFormatted = `${endHour}:${endMinute.toString().padStart(2, '0')}`;
+        
+        // Minutes to subtract (between 5 and 60 minutes, in 5-minute intervals)
+        const minutesToSubtract = (Math.floor(Math.random() * 12) + 1) * 5; // 5, 10, 15, ..., 60
+        
+        // Calculate start time
+        let totalMinutes = endHour * 60 + endMinute - minutesToSubtract;
+        // Ensure positive value by adding 12 hours if needed
+        if (totalMinutes < 0) {
+            totalMinutes += 12 * 60;
+        }
+        
+        const startHour = Math.floor(totalMinutes / 60) % 12 || 12; // Keep in 12-hour format
+        const startMinute = totalMinutes % 60;
+        
+        // Format start time
+        const correctAnswer = `${startHour}:${startMinute.toString().padStart(2, '0')}`;
+        
+        // Generate wrong answers (off by 5, 10, or 15 minutes)
+        const offsets = [5, 10, 15];
+        const wrongAnswers = offsets.map(offset => {
+            // Randomly add or subtract the offset
+            const offsetDirection = Math.random() > 0.5 ? 1 : -1;
+            let wrongTotalMinutes = totalMinutes + (offset * offsetDirection);
+            // Ensure positive
+            if (wrongTotalMinutes < 0) {
+                wrongTotalMinutes += 12 * 60;
+            }
+            
+            const wrongHour = Math.floor(wrongTotalMinutes / 60) % 12 || 12;
+            const wrongMinute = wrongTotalMinutes % 60;
+            return `${wrongHour}:${wrongMinute.toString().padStart(2, '0')}`;
+        });
+        
+        return {
+            question: `${person.name}'s music lesson ends at ${endTimeFormatted}. If the lesson lasts ${minutesToSubtract} minutes, what time did it start?`,
+            answers: shuffleArray([correctAnswer, ...wrongAnswers]),
+            correctAnswer: correctAnswer
+        };
+    },
+    
+    readClockTime: (person) => {
+        // Array of possible hour positions for a clock
+        const hours = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+        
+        // Minute positions that are easy to read (multiples of 5)
+        const minutes = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55];
+        
+        // Select random hour and minute
+        const hour = hours[Math.floor(Math.random() * hours.length)];
+        const minute = minutes[Math.floor(Math.random() * minutes.length)];
+        
+        // Format the correct time
+        const correctAnswer = `${hour}:${minute.toString().padStart(2, '0')}`;
+        
+        // Generate clock description
+        let clockDescription;
+        if (minute === 0) {
+            clockDescription = `the hour hand is at ${hour} and the minute hand is at 12`;
+        } else if (minute === 30) {
+            clockDescription = `the hour hand is halfway between ${hour} and ${hour % 12 + 1}, and the minute hand is at 6`;
+        } else if (minute === 15) {
+            clockDescription = `the hour hand is a little past ${hour}, and the minute hand is at 3`;
+        } else if (minute === 45) {
+            clockDescription = `the hour hand is almost at ${hour % 12 + 1}, and the minute hand is at 9`;
+        } else {
+            // Which number the minute hand points to
+            const minuteHand = minute / 5;
+            clockDescription = `the hour hand is ${minute < 30 ? 'a little' : 'more than halfway'} between ${hour} and ${hour % 12 + 1}, and the minute hand points to ${minuteHand}`;
+        }
+        
+        // Generate wrong answers
+        const wrongAnswers = [];
+        while (wrongAnswers.length < 3) {
+            // Generate a different time
+            const wrongHour = hours[Math.floor(Math.random() * hours.length)];
+            const wrongMinute = minutes[Math.floor(Math.random() * minutes.length)];
+            const wrongTime = `${wrongHour}:${wrongMinute.toString().padStart(2, '0')}`;
+            
+            // Only add if it's not the correct time and not already in wrong answers
+            if (wrongTime !== correctAnswer && !wrongAnswers.includes(wrongTime)) {
+                wrongAnswers.push(wrongTime);
+            }
+        }
+        
+        return {
+            question: `On an analog clock, when ${clockDescription}, what time is it?`,
+            answers: shuffleArray([correctAnswer, ...wrongAnswers]),
+            correctAnswer: correctAnswer
+        };
+    },
+    
+    timeElapsed: (person) => {
+        // Generate start and end times with a reasonable difference
+        
+        // Start with whole hours for simplicity
+        const startHour = Math.floor(Math.random() * 11) + 1; // 1-11
+        const startMinute = 0; // Start with zero minutes
+        
+        // Elapsed time between 1 and 3 hours, in 15-minute increments
+        const hoursElapsed = Math.floor(Math.random() * 3) + 1; // 1, 2, or 3 hours
+        const minutesElapsed = Math.floor(Math.random() * 4) * 15; // 0, 15, 30, or 45 minutes
+        
+        // Calculate end time
+        const totalStartMinutes = startHour * 60 + startMinute;
+        const totalEndMinutes = totalStartMinutes + (hoursElapsed * 60) + minutesElapsed;
+        
+        const endHour = Math.floor(totalEndMinutes / 60) % 12 || 12; // Keep in 12-hour format
+        const endMinute = totalEndMinutes % 60;
+        
+        // Format start and end times
+        const startTime = `${startHour}:00`;
+        const endTime = `${endHour}:${endMinute.toString().padStart(2, '0')}`;
+        
+        // Format correct answer
+        let correctAnswer;
+        if (minutesElapsed === 0) {
+            correctAnswer = `${hoursElapsed} hour${hoursElapsed !== 1 ? 's' : ''}`;
+        } else if (hoursElapsed === 0) {
+            correctAnswer = `${minutesElapsed} minute${minutesElapsed !== 1 ? 's' : ''}`;
+        } else {
+            correctAnswer = `${hoursElapsed} hour${hoursElapsed !== 1 ? 's' : ''} and ${minutesElapsed} minute${minutesElapsed !== 1 ? 's' : ''}`;
+        }
+        
+        // Generate wrong answers with plausible but incorrect elapsed times
+        const wrongTimes = [];
+        while (wrongTimes.length < 3) {
+            const wrongHoursOffset = Math.floor(Math.random() * 3) - 1; // -1, 0, or 1
+            const wrongMinutesOffset = Math.floor(Math.random() * 4 - 2) * 15; // -30, -15, 0, 15, or 30 minutes
+            
+            let wrongHours = hoursElapsed + wrongHoursOffset;
+            let wrongMinutes = minutesElapsed + wrongMinutesOffset;
+            
+            // Adjust for overflow
+            if (wrongMinutes >= 60) {
+                wrongHours += 1;
+                wrongMinutes -= 60;
+            } else if (wrongMinutes < 0) {
+                wrongHours -= 1;
+                wrongMinutes += 60;
+            }
+            
+            // Ensure positive values
+            if (wrongHours < 0 || (wrongHours === 0 && wrongMinutes === 0)) {
+                continue;
+            }
+            
+            // Format wrong answer
+            let wrongAnswer;
+            if (wrongMinutes === 0) {
+                wrongAnswer = `${wrongHours} hour${wrongHours !== 1 ? 's' : ''}`;
+            } else if (wrongHours === 0) {
+                wrongAnswer = `${wrongMinutes} minute${wrongMinutes !== 1 ? 's' : ''}`;
+            } else {
+                wrongAnswer = `${wrongHours} hour${wrongHours !== 1 ? 's' : ''} and ${wrongMinutes} minute${wrongMinutes !== 1 ? 's' : ''}`;
+            }
+            
+            if (wrongAnswer !== correctAnswer && !wrongTimes.includes(wrongAnswer)) {
+                wrongTimes.push(wrongAnswer);
+            }
+        }
+        
+        return {
+            question: `If ${person.name}'s party started at ${startTime} and ended at ${endTime}, how much time elapsed?`,
+            answers: shuffleArray([correctAnswer, ...wrongTimes]),
+            correctAnswer: correctAnswer
+        };
+    },
+    
+    // Month number identification question
+    monthNumber: (person) => {
+        const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        
+        // Random month selection
+        const randomMonthIndex = Math.floor(Math.random() * 12);
+        const correctAnswer = randomMonthIndex + 1; // Convert to 1-indexed for month numbers
+        
+        // Generate wrong answers (different month numbers)
+        const wrongAnswers = [];
+        while (wrongAnswers.length < 3) {
+            const wrongAnswer = Math.floor(Math.random() * 12) + 1;
+            if (wrongAnswer !== correctAnswer && !wrongAnswers.includes(wrongAnswer)) {
+                wrongAnswers.push(wrongAnswer);
+            }
+        }
+        
+        return {
+            question: `What is the number of the month ${months[randomMonthIndex]} in the calendar?`,
+            answers: shuffleArray([correctAnswer.toString(), ...wrongAnswers.map(String)]),
+            correctAnswer: correctAnswer.toString()
+        };
+    },
+    
+    // Month name from number question
+    monthName: (person) => {
+        const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        
+        // Random month number
+        const randomMonthNumber = Math.floor(Math.random() * 12) + 1; // 1-12
+        const correctAnswer = months[randomMonthNumber - 1];
+        
+        // Generate wrong answers (different months)
+        const wrongAnswers = [];
+        while (wrongAnswers.length < 3) {
+            const wrongMonthIndex = Math.floor(Math.random() * 12);
+            const wrongMonth = months[wrongMonthIndex];
+            if (wrongMonth !== correctAnswer && !wrongAnswers.includes(wrongMonth)) {
+                wrongAnswers.push(wrongMonth);
+            }
+        }
+        
+        return {
+            question: `What is the name of month #${randomMonthNumber} in the calendar year?`,
+            answers: shuffleArray([correctAnswer, ...wrongAnswers]),
+            correctAnswer: correctAnswer
+        };
+    },
+    
+    // Week number within a month question
+    weekInMonth: (person) => {
+        // Create a scenario about a specific week in a month
+        const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        const randomMonthIndex = Math.floor(Math.random() * 12);
+        const randomMonth = months[randomMonthIndex];
+        
+        // Random week number (1-4)
+        const weekNumber = Math.floor(Math.random() * 4) + 1;
+        const correctAnswer = weekNumber;
+        
+        // Generate descriptions for the week
+        let weekDescription;
+        switch(weekNumber) {
+            case 1:
+                weekDescription = "first week";
+                break;
+            case 2:
+                weekDescription = "second week";
+                break;
+            case 3:
+                weekDescription = "third week";
+                break;
+            case 4:
+                weekDescription = "fourth week";
+                break;
+        }
+        
+        // Generate days for that week
+        // Here we'll approximate since calendar weeks can vary
+        const startDay = (weekNumber - 1) * 7 + 1;
+        const endDay = Math.min(startDay + 6, [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][randomMonthIndex]);
+        
+        // Generate wrong answers (different week numbers)
+        const wrongAnswers = [1, 2, 3, 4].filter(num => num !== weekNumber);
+        
+        const ordinals = ['first', 'second', 'third', 'fourth'];
+        
+        return {
+            question: `If ${person.name} visits from ${randomMonth} ${startDay} to ${randomMonth} ${endDay}, which week of ${randomMonth} is this?`,
+            answers: shuffleArray([ordinals[weekNumber-1], ...wrongAnswers.map(num => ordinals[num-1])]),
+            correctAnswer: ordinals[weekNumber-1]
+        };
+    },
+    
+    // Week order in a month
+    weekOrder: (person) => {
+        const weekdays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+        const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        
+        // Choose a random month
+        const randomMonthIndex = Math.floor(Math.random() * 12);
+        const randomMonth = months[randomMonthIndex];
+        
+        // Choose a random weekday
+        const randomWeekdayIndex = Math.floor(Math.random() * 7);
+        const randomWeekday = weekdays[randomWeekdayIndex];
+        
+        // Choose which occurrence (1st, 2nd, 3rd, or 4th) of the weekday
+        const occurrenceNum = Math.floor(Math.random() * 4) + 1;
+        let occurrenceWord;
+        switch(occurrenceNum) {
+            case 1: occurrenceWord = "first"; break;
+            case 2: occurrenceWord = "second"; break;
+            case 3: occurrenceWord = "third"; break;
+            case 4: occurrenceWord = "fourth"; break;
+            default: occurrenceWord = "first";
+        }
+        
+        const correctAnswer = occurrenceWord;
+        
+        // Generate wrong options - different occurrences
+        const wrongAnswers = ["first", "second", "third", "fourth"].filter(occ => occ !== occurrenceWord);
+        
+        return {
+            question: `${person.name}'s music class is on the ${occurrenceWord} ${randomWeekday} of ${randomMonth}. Which ${randomWeekday} of the month is this?`,
+            answers: shuffleArray([correctAnswer, ...wrongAnswers.slice(0, 3)]),
+            correctAnswer: correctAnswer
+        };
+    },
+    
+    // Counting weeks in a month
+    weeksInMonth: (person) => {
+        const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        
+        // Different months can have 4 or 5 full or partial weeks
+        // Most months are considered to have 4 weeks, though they actually have a bit more
+        const monthsWithFourWeeks = [1]; // February (in non-leap years) is closest to exactly 4 weeks
+        const monthsWithFiveWeeks = [0, 2, 4, 6, 7, 9, 11]; // Months with 31 days
+        
+        // Pick a random scenario
+        const useExactWeeks = Math.random() > 0.5;
+        
+        let randomMonthIndex, correctAnswer;
+        if (useExactWeeks) {
+            // For exact weeks scenario (focusing on just full weeks)
+            correctAnswer = "4";
+            // Pick a month commonly thought of as having 4 weeks
+            randomMonthIndex = monthsWithFourWeeks[Math.floor(Math.random() * monthsWithFourWeeks.length)];
+        } else {
+            // For calendar weeks scenario (where parts of weeks count)
+            correctAnswer = "5";
+            // Pick a month that typically has 5 calendar weeks
+            randomMonthIndex = monthsWithFiveWeeks[Math.floor(Math.random() * monthsWithFiveWeeks.length)];
+        }
+        
+        const randomMonth = months[randomMonthIndex];
+        
+        // Generate wrong answers
+        const wrongAnswers = ["3", "4", "5", "6"].filter(num => num !== correctAnswer);
+        
+        let questionText;
+        if (useExactWeeks) {
+            questionText = `How many complete weeks (7 days each) are there typically in ${randomMonth}?`;
+        } else {
+            questionText = `How many calendar weeks (including partial weeks) are usually shown on a calendar for ${randomMonth}?`;
+        }
+        
+        return {
+            question: questionText,
+            answers: shuffleArray([correctAnswer, ...wrongAnswers.slice(0, 3)]),
+            correctAnswer: correctAnswer
+        };
+    },
+    
+    // Weekday number identification question (where Sunday=1)
+    weekdayNumber: (person) => {
+        const weekdays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+        
+        // Random weekday selection
+        const randomWeekdayIndex = Math.floor(Math.random() * 7);
+        const weekdayName = weekdays[randomWeekdayIndex];
+        const correctAnswer = randomWeekdayIndex + 1; // Convert to 1-indexed with Sunday=1
+        
+        // Generate wrong answers (different weekday numbers)
+        const wrongAnswers = [];
+        while (wrongAnswers.length < 3) {
+            const wrongAnswer = Math.floor(Math.random() * 7) + 1; // 1-7
+            if (wrongAnswer !== correctAnswer && !wrongAnswers.includes(wrongAnswer)) {
+                wrongAnswers.push(wrongAnswer);
+            }
+        }
+        
+        return {
+            question: `If Sunday is day 1, Monday is day 2, and so on, what number is assigned to ${weekdayName}?`,
+            answers: shuffleArray([correctAnswer.toString(), ...wrongAnswers.map(String)]),
+            correctAnswer: correctAnswer.toString()
+        };
+    },
+    
+    // Weekday name from number question (where Sunday=1)
+    weekdayName: (person) => {
+        const weekdays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+        
+        // Random weekday number (1-7, with Sunday=1)
+        const randomWeekdayNumber = Math.floor(Math.random() * 7) + 1; // 1-7
+        const correctAnswer = weekdays[randomWeekdayNumber - 1];
+        
+        // Generate wrong answers (different weekdays)
+        const wrongAnswers = [];
+        while (wrongAnswers.length < 3) {
+            const wrongWeekdayIndex = Math.floor(Math.random() * 7);
+            const wrongWeekday = weekdays[wrongWeekdayIndex];
+            if (wrongWeekday !== correctAnswer && !wrongAnswers.includes(wrongWeekday)) {
+                wrongAnswers.push(wrongWeekday);
+            }
+        }
+        
+        return {
+            question: `If Sunday is day 1, Monday is day 2, and so on, which day of the week is day ${randomWeekdayNumber}?`,
+            answers: shuffleArray([correctAnswer, ...wrongAnswers]),
+            correctAnswer: correctAnswer
+        };
+    },
+    
+    // Week position from birthdate (where Sunday=1)
+    birthWeekdayNumber: (person) => {
+        const weekdays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+        const weekdayIndex = weekdays.indexOf(person.birthWeekday);
+        const correctAnswer = weekdayIndex + 1; // Convert to 1-indexed with Sunday=1
+        
+        // Generate wrong answers (different day numbers)
+        const wrongAnswers = [];
+        while (wrongAnswers.length < 3) {
+            const wrongAnswer = Math.floor(Math.random() * 7) + 1; // 1-7
+            if (wrongAnswer !== correctAnswer && !wrongAnswers.includes(wrongAnswer)) {
+                wrongAnswers.push(wrongAnswer);
+            }
+        }
+        
+        return {
+            question: `${person.name} was born on a ${person.birthWeekday}. If Sunday is day 1, Monday is day 2, and so on, what day number is ${person.name}'s birth weekday?`,
+            answers: shuffleArray([correctAnswer.toString(), ...wrongAnswers.map(String)]),
+            correctAnswer: correctAnswer.toString()
+        };
+    },
+    
+    // Day calculation based on weekday numbers (where Sunday=1)
+    weekdayCalculation: (person) => {
+        const weekdays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+        
+        // Random starting day (1-7)
+        const startDayNumber = Math.floor(Math.random() * 7) + 1;
+        const startDayName = weekdays[startDayNumber - 1];
+        
+        // Days to add (2-5 days)
+        const daysToAdd = Math.floor(Math.random() * 4) + 2;
+        
+        // Calculate result day
+        const resultDayNumber = ((startDayNumber + daysToAdd - 1) % 7) + 1;
+        const correctAnswer = resultDayNumber;
+        
+        // Generate wrong answers
+        const wrongAnswers = [];
+        while (wrongAnswers.length < 3) {
+            const wrongAnswer = Math.floor(Math.random() * 7) + 1;
+            if (wrongAnswer !== correctAnswer && !wrongAnswers.includes(wrongAnswer)) {
+                wrongAnswers.push(wrongAnswer);
+            }
+        }
+        
+        return {
+            question: `If ${startDayName} is day ${startDayNumber}, and ${person.name} has a ${daysToAdd}-day project, on which day number will the project end?`,
+            answers: shuffleArray([correctAnswer.toString(), ...wrongAnswers.map(String)]),
+            correctAnswer: correctAnswer.toString()
         };
     }
 };

@@ -421,108 +421,65 @@ function startQuestions() {
 function generateQuestions() {
     currentQuestions = [];
     
-    // Get all available question types
-    const standardQuestionGenerators = [
-        questionTypes.weekdayRelated,
+    // Get all core concept question types that we want to focus on
+    const coreQuestionTypes = [
+        // Month related questions
         questionTypes.monthRelated,
-        questionTypes.zodiacRelated,
-        questionTypes.seasonRelated,
-        questionTypes.arithmeticAddition,
-        questionTypes.arithmeticSubtraction,
-        questionTypes.daysInMonth
-    ];
-    
-    // New question types focusing on concepts Nia is learning
-    const learningConceptQuestions = [
-        // Sequence understanding questions
         questionTypes.monthSequence,
-        questionTypes.weekdaySequence,
-        questionTypes.seasonSequence,
-        questionTypes.numberSequence,
-        
-        // Spelling practice
         questionTypes.spellingMonths,
+        questionTypes.calendarAddition,
+        questionTypes.monthNumber,
+        questionTypes.monthName,
+        
+        // Weekday related questions
+        questionTypes.weekdayRelated,
+        questionTypes.weekdaySequence,
         questionTypes.spellingWeekdays,
+        questionTypes.weekdayNumber,
+        questionTypes.weekdayName,
+        questionTypes.birthWeekdayNumber,
+        questionTypes.weekdayCalculation,
+        
+        // Week number related questions
+        questionTypes.weekInMonth,
+        questionTypes.weekOrder,
+        questionTypes.weeksInMonth,
+        
+        // Zodiac related questions
+        questionTypes.zodiacRelated,
         questionTypes.spellingZodiac,
         
-        // Math operations Nia struggles with
+        // Season related questions
+        questionTypes.seasonRelated,
+        questionTypes.seasonSequence,
+        
+        // Time-related questions (hours and minutes)
+        questionTypes.hourMinuteAddition,
+        questionTypes.hourMinuteSubtraction,
+        questionTypes.readClockTime,
+        questionTypes.timeElapsed,
+        
+        // Arithmetic questions
+        questionTypes.arithmeticAddition,
+        questionTypes.arithmeticSubtraction,
         questionTypes.multiplicationSimple,
         questionTypes.divisionSimple,
         questionTypes.subtractionVisual,
-        
-        // Time concepts
-        questionTypes.timePassage,
-        questionTypes.calendarAddition
+        questionTypes.numberSequence,
+        questionTypes.timePassage
     ];
     
-    // Special milestone questions only for people with milestone data
-    const childMilestoneQuestionGenerators = [
-        questionTypes.milestoneAge,
-        questionTypes.milestoneCause,
-        questionTypes.milestoneSequence,
-        questionTypes.milestoneArithmetic
-    ];
-    
-    // Adult milestone questions only for adults
-    const adultMilestoneQuestionGenerators = [
-        questionTypes.adultMilestoneAge,
-        questionTypes.adultMilestoneYear,
-        questionTypes.adultMilestoneSequence,
-        questionTypes.adultMilestoneArithmetic
-    ];
-    
-    // Combine question types based on person's data
-    let availableQuestionGenerators = [...standardQuestionGenerators, ...learningConceptQuestions];
-    
-    // Check if person has child milestones
-    const hasChildMilestones = 
-        currentPerson.milestones && 
-        (currentPerson.milestones.firstSteps || 
-         currentPerson.milestones.firstWords || 
-         currentPerson.milestones.weaning);
-    
-    // Check if person has adult milestones
-    const hasAdultMilestones = 
-        currentPerson.milestones && 
-        (currentPerson.milestones.collegeCompleted || 
-         currentPerson.milestones.firstJob || 
-         currentPerson.milestones.married);
-    
-    // Add milestone questions if appropriate
-    if (hasChildMilestones) {
-        availableQuestionGenerators = [...availableQuestionGenerators, ...childMilestoneQuestionGenerators];
-    }
-    
-    if (hasAdultMilestones) {
-        availableQuestionGenerators = [...availableQuestionGenerators, ...adultMilestoneQuestionGenerators];
-    }
-    
-    // Generate 15 questions with emphasis on learning concept questions
-    // We'll ensure at least 10 questions focus on the concepts Nia is struggling with
+    // Generate 15 questions from our core concepts
     const questionCount = 15;
-    const learningConceptCount = 10;
     
-    // First, add learning concept questions
-    for (let i = 0; i < learningConceptCount; i++) {
-        const randomTypeIndex = Math.floor(Math.random() * learningConceptQuestions.length);
-        const questionGenerator = learningConceptQuestions[randomTypeIndex];
+    for (let i = 0; i < questionCount; i++) {
+        // Pick a random question type
+        const randomTypeIndex = Math.floor(Math.random() * coreQuestionTypes.length);
+        const questionGenerator = coreQuestionTypes[randomTypeIndex];
         currentQuestions.push(questionGenerator(currentPerson));
     }
     
-    // Then add some standard/milestone questions to complete the set
-    const remainingQuestionTypes = [
-        ...standardQuestionGenerators,
-        ...(hasChildMilestones ? childMilestoneQuestionGenerators : []),
-        ...(hasAdultMilestones ? adultMilestoneQuestionGenerators : [])
-    ];
-    
-    for (let i = learningConceptCount; i < questionCount; i++) {
-        const randomTypeIndex = Math.floor(Math.random() * remainingQuestionTypes.length);
-        const questionGenerator = remainingQuestionTypes[randomTypeIndex];
-        currentQuestions.push(questionGenerator(currentPerson));
-    }
-    
-    // Shuffle questions to mix learning concepts with other questions
+    // Shuffle questions for variety
     currentQuestions = shuffleArray(currentQuestions);
 }
 
@@ -832,6 +789,9 @@ function setupMobileOptimizations() {
     
     // Replace hover styles with active state for touch
     applyTouchFeedback();
+    
+    // Ensure hint buttons work specifically
+    handleHintButtons();
 }
 
 // Add a function to apply momentum scrolling to scrollable elements
@@ -922,6 +882,7 @@ function applyTouchFeedback() {
     
     // Special handling for family member cards to ensure they work on Android
     handleFamilyMemberCards();
+    handleHintButtons();
 }
 
 // Special function to handle family member cards
@@ -951,6 +912,45 @@ function handleFamilyMemberCards() {
             }
         }
     });
+}
+
+// Special direct treatment for the hint buttons
+function handleHintButtons() {
+    const hintButtons = [
+        { id: 'months-hint', handler: () => showHint('months') },
+        { id: 'weekdays-hint', handler: () => showHint('weekdays') },
+        { id: 'seasons-hint', handler: () => showHint('seasons') },
+        { id: 'zodiac-hint', handler: () => showHint('zodiacSigns') }
+    ];
+    
+    hintButtons.forEach(button => {
+        const el = document.getElementById(button.id);
+        if (el) {
+            // Remove existing handlers first
+            const clonedEl = el.cloneNode(true);
+            el.parentNode.replaceChild(clonedEl, el);
+            
+            // Add direct handlers for both click and touch events
+            clonedEl.addEventListener('click', button.handler);
+            clonedEl.addEventListener('touchend', function(e) {
+                e.preventDefault();
+                button.handler();
+            });
+        }
+    });
+    
+    // Also handle the modal close button
+    const closeBtn = document.querySelector('.close-btn');
+    if (closeBtn) {
+        const clonedCloseBtn = closeBtn.cloneNode(true);
+        closeBtn.parentNode.replaceChild(clonedCloseBtn, closeBtn);
+        
+        clonedCloseBtn.addEventListener('click', closeHintModal);
+        clonedCloseBtn.addEventListener('touchend', function(e) {
+            e.preventDefault();
+            closeHintModal();
+        });
+    }
 }
 
 // Check if the web app is in standalone mode (launched from home screen)
