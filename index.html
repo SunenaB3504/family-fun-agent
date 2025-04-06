@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="mobile-web-app-capable" content="yes"> <!-- Android home screen app -->
+    <meta name="theme-color" content="#6a4c93"> <!-- Android status bar color -->
+    <meta name="apple-mobile-web-app-capable" content="yes"> <!-- iOS support -->
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Family Chronicle: A Birth Date</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Add app icon for home screen -->
+    <link rel="icon" sizes="192x192" href="data:image/png;base64,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">
+</head>
+<body>
+    <!-- Add a fullscreen container for app-like feeling -->
+    <div class="fullscreen-app" id="app-container">
+        <div class="container">
+            <header>
+                <h1>Family Chronicle: A Birth Date</h1>
+                <div class="score-container">Score: <span id="score">0</span></div>
+            </header>
+
+            <main>
+                <div id="welcome-screen" class="game-screen active">
+                    <h2>Welcome to Family Chronicle!</h2>
+                    <p>Let's learn about family milestones while having fun!</p>
+                    <button id="start-game-btn" class="btn">Start Game</button>
+                </div>
+
+                <div id="family-selection" class="game-screen">
+                    <h2>Whose milestone would you like to learn about?</h2>
+                    
+                    <div class="family-groups-container">
+                        <!-- Own Family Group -->
+                        <div class="family-group">
+                            <h3>Own Family</h3>
+                            <div class="family-members-container" id="own-family-members">
+                                <!-- Own family members will be added here dynamically -->
+                            </div>
+                        </div>
+
+                        <!-- Paternal Family Group -->
+                        <div class="family-group">
+                            <h3>Paternal Family</h3>
+                            <div class="family-members-container" id="paternal-family-members">
+                                <!-- Paternal family members will be added here dynamically -->
+                            </div>
+                        </div>
+
+                        <!-- Maternal Family Group -->
+                        <div class="family-group">
+                            <h3>Maternal Family</h3>
+                            <div class="family-members-container" id="maternal-family-members">
+                                <!-- Maternal family members will be added here dynamically -->
+                            </div>
+                        </div>
+
+                        <!-- Friends Group -->
+                        <div class="family-group">
+                            <h3>Friends</h3>
+                            <div class="family-members-container" id="friends-family-members">
+                                <!-- Friends will be added here dynamically -->
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button id="back-to-welcome-btn" class="btn home-btn">Home</button>
+                </div>
+
+                <div id="milestone-info" class="game-screen">
+                    <h2 id="selected-person-name"></h2>
+                    <div class="milestone-details">
+                        <p>Birth Date: <span id="birth-date"></span></p>
+                        <p>Day of the Week: <span id="birth-weekday"></span></p>
+                        <p>Zodiac Sign: <span id="zodiac-sign"></span></p>
+                        <p>Season: <span id="birth-season"></span></p>
+                    </div>
+                    
+                    <!-- New milestones section -->
+                    <div id="milestone-timeline" class="milestone-timeline">
+                        <h3>Life Milestones</h3>
+                        <div id="milestone-list" class="milestone-list">
+                            <!-- Milestones will be added here dynamically -->
+                        </div>
+                    </div>
+                    
+                    <div class="button-container">
+                        <button id="start-questions-btn" class="btn">Let's Answer Questions</button>
+                        <button id="back-to-family-btn" class="btn home-btn">Back</button>
+                    </div>
+                </div>
+
+                <!-- Add a new hints section -->
+                <div id="hints-modal" class="modal">
+                    <div class="modal-content">
+                        <span class="close-btn">&times;</span>
+                        <h2 id="hint-title">Hints</h2>
+                        <div id="hint-content" class="hint-content"></div>
+                    </div>
+                </div>
+
+                <div id="question-screen" class="game-screen">
+                    <div id="question-container">
+                        <h2 id="question-text"></h2>
+                        <div id="answer-options">
+                            <!-- Answer options will be added here dynamically -->
+                        </div>
+                    </div>
+                    <div id="feedback" class="hidden">
+                        <p id="feedback-text"></p>
+                        <button id="next-question-btn" class="btn">Next Question</button>
+                    </div>
+                    
+                    <!-- Add hint buttons -->
+                    <div class="hints-container">
+                        <p>Need help? Use these hints:</p>
+                        <div class="hint-buttons">
+                            <button id="months-hint" class="hint-btn">Months</button>
+                            <button id="weekdays-hint" class="hint-btn">Weekdays</button>
+                            <button id="seasons-hint" class="hint-btn">Seasons</button>
+                            <button id="zodiac-hint" class="hint-btn">Zodiac Signs</button>
+                        </div>
+                    </div>
+                    
+                    <button id="quit-quiz-btn" class="btn home-btn">Quit Quiz</button>
+                </div>
+
+                <div id="game-over" class="game-screen">
+                    <h2>Great Job!</h2>
+                    <p>You've completed the questions for this family member.</p>
+                    <p>Your score: <span id="final-score"></span></p>
+                    <div id="reward-area">
+                        <!-- Rewards will be displayed here -->
+                    </div>
+                    <div class="button-container">
+                        <button id="play-again-btn" class="btn">Play Again</button>
+                        <button id="back-to-welcome-from-game-over-btn" class="btn home-btn">Home</button>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+    
+    <script src="data.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
