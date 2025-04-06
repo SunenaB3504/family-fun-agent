@@ -2099,6 +2099,85 @@ const questionTypes = {
             answers: shuffleArray([correctAnswer.toString(), ...wrongAnswers.map(String)]),
             correctAnswer: correctAnswer.toString()
         };
+    },
+    
+    // New advanced weekday calculation question
+    advancedWeekdayNumbering: (person) => {
+        const weekdays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+        
+        // Choose two random weekdays
+        const firstWeekdayIndex = Math.floor(Math.random() * 7);
+        let secondWeekdayIndex;
+        do {
+            secondWeekdayIndex = Math.floor(Math.random() * 7);
+        } while (secondWeekdayIndex === firstWeekdayIndex);
+        
+        const firstWeekday = weekdays[firstWeekdayIndex];
+        const secondWeekday = weekdays[secondWeekdayIndex];
+        
+        // Calculate the difference in days
+        let difference = (secondWeekdayIndex - firstWeekdayIndex + 7) % 7;
+        if (difference === 0) difference = 7; // Full week
+        
+        const correctAnswer = difference.toString();
+        
+        // Generate wrong answers (different but plausible day counts)
+        const wrongAnswers = [];
+        while (wrongAnswers.length < 3) {
+            let wrongDiff = Math.floor(Math.random() * 6) + 1; // 1-6
+            if (wrongDiff === difference) wrongDiff = (wrongDiff % 6) + 1; // Make sure it's different
+            
+            if (!wrongAnswers.includes(wrongDiff.toString())) {
+                wrongAnswers.push(wrongDiff.toString());
+            }
+        }
+        
+        return {
+            question: `If Sunday is day 1 and ${person.name} starts a task on ${firstWeekday} and finishes it on ${secondWeekday}, how many days did the task take?`,
+            answers: shuffleArray([correctAnswer, ...wrongAnswers]),
+            correctAnswer: correctAnswer
+        };
+    },
+    
+    // Weekday position in month question
+    weekdayPositionInMonth: (person) => {
+        const weekdays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+        const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        
+        // Pick a random weekday
+        const randomWeekdayIndex = Math.floor(Math.random() * 7);
+        const weekdayName = weekdays[randomWeekdayIndex];
+        
+        // Pick a random month
+        const randomMonthIndex = Math.floor(Math.random() * 12);
+        const monthName = months[randomMonthIndex];
+        
+        // Generate a position number (1-4)
+        const positionNumber = Math.floor(Math.random() * 4) + 1;
+        let positionWord;
+        switch(positionNumber) {
+            case 1: positionWord = "first"; break;
+            case 2: positionWord = "second"; break;
+            case 3: positionWord = "third"; break;
+            case 4: positionWord = "fourth"; break;
+        }
+        
+        const correctDay = randomWeekdayIndex + 1; // Sunday = 1, Monday = 2, etc.
+        
+        // Generate wrong answers (different day numbers)
+        const wrongAnswers = [];
+        while (wrongAnswers.length < 3) {
+            const wrongDay = Math.floor(Math.random() * 7) + 1; // 1-7
+            if (wrongDay !== correctDay && !wrongAnswers.includes(wrongDay.toString())) {
+                wrongAnswers.push(wrongDay.toString());
+            }
+        }
+        
+        return {
+            question: `${person.name} has ${monthName} events on the ${positionWord} ${weekdayName} of the month. If Sunday is day 1, what day number is this event on?`,
+            answers: shuffleArray([correctDay.toString(), ...wrongAnswers]),
+            correctAnswer: correctDay.toString()
+        };
     }
 };
 
