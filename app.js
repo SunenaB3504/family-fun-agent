@@ -897,7 +897,11 @@ function applyTouchFeedback() {
         { id: 'start-game-btn', handler: startGame },
         { id: 'start-questions-btn', handler: startQuestions },
         { id: 'next-question-btn', handler: showNextQuestion },
-        { id: 'back-to-welcome-btn', handler: goToWelcomeScreen }
+        { id: 'back-to-welcome-btn', handler: goToWelcomeScreen },
+        { id: 'back-to-family-btn', handler: goToFamilySelection },
+        { id: 'back-to-welcome-from-game-over-btn', handler: goToWelcomeScreen },
+        { id: 'play-again-btn', handler: resetGame },
+        { id: 'quit-quiz-btn', handler: quitQuiz }
     ];
     
     criticalButtons.forEach(button => {
