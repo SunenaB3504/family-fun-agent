@@ -749,6 +749,12 @@ function showHint(hintType) {
     
     // Show the modal
     modal.style.display = 'block';
+    
+    // Reset scroll position of hint content
+    const hintContentElement = document.getElementById('hint-content');
+    if (hintContentElement) {
+        hintContentElement.scrollTop = 0;
+    }
 }
 
 // Close hint modal
@@ -759,37 +765,87 @@ function closeHintModal() {
 
 // Function to handle Android fullscreen mode
 function setupMobileOptimizations() {
-    // Prevent default touchmove behavior to avoid scrolling/zooming issues
+    // Allow scrolling in specific areas and prevent default touch behavior elsewhere
     document.addEventListener('touchmove', function(event) {
-        if (event.target.closest('.hint-content') === null) {
+        // Allow scrolling in scrollable areas
+        const scrollableElement = event.target.closest('.milestone-list, .hint-content, .game-screen, .modal-content');
+        if (!scrollableElement) {
             event.preventDefault();
         }
     }, { passive: false });
     
+    // Fix dragging issues by canceling drag events globally
+    document.addEventListener('dragstart', function(event) {
+        event.preventDefault();
+    });
+    
+    // Fix selection issues for text and elements
+    document.addEventListener('selectstart', function(event) {
+        if (!event.target.closest('input, textarea')) {
+            event.preventDefault();
+        }
+    });
+    
     // Handle orientation changes
     window.addEventListener('orientationchange', handleOrientationChange);
+    
+    // Improve touch response by adding minimal delay
+    document.addEventListener('touchstart', function() {}, {passive: true});
+    
+    // Apply momentum scrolling to scrollable areas
+    applyMomentumScrolling();
     
     // Request fullscreen when launched from home screen
     if (isInStandaloneMode()) {
         enterFullscreen();
     }
     
-    // Add double tap handler for fullscreen toggle
-    let lastTap = 0;
-    document.addEventListener('touchend', function(e) {
-        const currentTime = new Date().getTime();
-        const tapLength = currentTime - lastTap;
-        
-        if (tapLength < 300 && tapLength > 0 && e.target.closest('button, .answer-option, .family-member-card, .close-btn') === null) {
-            toggleFullscreen();
-            e.preventDefault();
-        }
-        
-        lastTap = currentTime;
-    });
-    
     // Replace hover styles with active state for touch
     applyTouchFeedback();
+}
+
+// Add a function to apply momentum scrolling to scrollable elements
+function applyMomentumScrolling() {
+    // Add scrolling styles to elements that need them
+    const scrollableElements = document.querySelectorAll('.milestone-list, .hint-content, .game-screen, .modal-content');
+    
+    scrollableElements.forEach(element => {
+        element.style.overflowY = 'scroll';
+        element.style.WebkitOverflowScrolling = 'touch';
+        
+        // Handle touch interactions for scroll areas
+        element.addEventListener('touchstart', function(e) {
+            // Store initial touch position
+            this.startY = e.touches[0].pageY;
+            this.scrollTop = this.scrollTop;
+            this.scrollHeight = this.scrollHeight;
+        });
+    });
+}
+
+// Improve touch feedback with visual indicators and better response time
+function applyTouchFeedback() {
+    const touchElements = document.querySelectorAll('.btn, .family-member-card, .answer-option, .hint-btn');
+    
+    touchElements.forEach(el => {
+        // Add a clear visual indicator for touch
+        el.addEventListener('touchstart', function(e) {
+            this.classList.add('touch-active');
+            
+            // Prevent default for better performance
+            if (!e.target.closest('input, textarea, .milestone-list, .hint-content')) {
+                e.preventDefault();
+            }
+        }, {passive: false});
+        
+        el.addEventListener('touchend', function() {
+            this.classList.remove('touch-active');
+        });
+        
+        el.addEventListener('touchcancel', function() {
+            this.classList.remove('touch-active');
+        });
+    });
 }
 
 // Check if the web app is in standalone mode (launched from home screen)
@@ -857,25 +913,6 @@ function toggleFullscreen() {
     } else {
         enterFullscreen();
     }
-}
-
-// Apply touch feedback animations
-function applyTouchFeedback() {
-    const touchElements = document.querySelectorAll('.btn, .family-member-card, .answer-option, .hint-btn');
-    
-    touchElements.forEach(el => {
-        el.addEventListener('touchstart', function() {
-            this.classList.add('touch-active');
-        });
-        
-        el.addEventListener('touchend', function() {
-            this.classList.remove('touch-active');
-        });
-        
-        el.addEventListener('touchcancel', function() {
-            this.classList.remove('touch-active');
-        });
-    });
 }
 
 // Initialize the game when the page loads

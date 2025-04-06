@@ -81,6 +81,10 @@ h1, h2 {
     padding: 25px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     text-align: center;
+    max-height: 85vh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 20px;
 }
 
 .active {
@@ -262,6 +266,10 @@ h1, h2 {
     position: relative;
     padding-left: 30px;
     margin-bottom: 20px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    max-height: 60vh;
+    padding-right: 5px;
 }
 
 .milestone-list::before {
@@ -356,6 +364,9 @@ h1, h2 {
     border-radius: 15px;
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
     animation: slideDown 0.4s ease-in-out;
+    max-height: 80vh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
 }
 
 @keyframes slideDown {
@@ -388,6 +399,7 @@ h1, h2 {
     margin-top: 15px;
     max-height: 60vh;
     overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
 }
 
 .hints-container {
@@ -608,4 +620,34 @@ h1, h2 {
     z-index: 9999;
     background-color: #f8f6ff;
     overflow-y: auto;
+    -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+}
+
+/* Improve scrolling within content areas */
+.milestone-list, .hint-content {
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    max-height: 60vh;
+    padding-right: 5px;
+}
+
+/* Fix touch-active state for better touch feedback */
+.touch-active {
+    background-color: rgba(106, 76, 147, 0.7) !important;
+    transform: scale(0.98);
+}
+
+/* Make content containers properly scrollable */
+.game-screen {
+    max-height: 85vh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 20px;
+}
+
+/* Ensure modals are scrollable */
+.modal-content {
+    max-height: 80vh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
 }
