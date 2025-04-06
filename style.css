@@ -283,23 +283,44 @@ h1, h2 {
     border-radius: 4px;
 }
 
+/* Updated milestone item styles to make it more button-like */
 .milestone-item {
     position: relative;
     margin-bottom: 15px;
-    padding-bottom: 15px;
-    border-bottom: 1px dotted #ddd;
+    padding: 15px 15px 15px 20px;
+    border-radius: 8px;
+    background-color: white;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-left: 5px solid #6a4c93;
+    text-align: left;
+    touch-action: manipulation;
+}
+
+.milestone-item:active {
+    transform: scale(0.98);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
 .milestone-item:last-child {
-    border-bottom: none;
-    padding-bottom: 0;
+    margin-bottom: 5px;
+}
+
+/* Different colored borders for different milestone types */
+.milestone-item.child-milestone {
+    border-left-color: #4c956c;
+}
+
+.milestone-item.adult-milestone {
+    border-left-color: #f8a5c2;
 }
 
 .milestone-item::before {
     content: '';
     position: absolute;
     left: -30px;
-    top: 5px;
+    top: 15px;
     width: 20px;
     height: 20px;
     border-radius: 50%;
@@ -312,19 +333,44 @@ h1, h2 {
 }
 
 .milestone-item.adult-milestone::before {
-    background-color: #6a4c93;
+    background-color: #f8a5c2;
 }
 
 .milestone-item h4 {
     margin: 0 0 5px;
     color: #6a4c93;
     font-size: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.milestone-item h4::after {
+    content: '→';
+    color: #aaa;
+    font-size: 20px;
+    margin-left: 5px;
+    transition: transform 0.2s;
+}
+
+.milestone-item.expanded h4::after {
+    transform: rotate(90deg);
 }
 
 .milestone-item p {
-    margin: 0;
+    margin: 5px 0 0;
     color: #666;
     font-size: 14px;
+    overflow: hidden;
+    max-height: 0;
+    opacity: 0;
+    transition: max-height 0.3s ease, opacity 0.3s ease, margin 0.3s ease;
+}
+
+.milestone-item.expanded p {
+    max-height: 100px;
+    opacity: 1;
+    margin: 10px 0 5px;
 }
 
 .milestone-time {
@@ -339,6 +385,35 @@ h1, h2 {
     color: #999;
     text-align: center;
     padding: 10px 0;
+}
+
+/* Modal for milestone details */
+.milestone-modal {
+    display: none;
+    position: fixed;
+    z-index: 101;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    overflow: auto;
+}
+
+.milestone-modal-content {
+    background-color: #fff;
+    margin: 15% auto;
+    padding: 25px;
+    width: 90%;
+    max-width: 500px;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    animation: zoomIn 0.3s;
+}
+
+@keyframes zoomIn {
+    from { transform: scale(0.5); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
 }
 
 /* Hints Modal and Buttons Styles */

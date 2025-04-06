@@ -272,6 +272,8 @@ function displayMilestoneTimeline(person) {
         <h4>Birth</h4>
         <p>Born on a ${person.birthWeekday} in ${person.season}</p>
     `;
+    // Add click event to toggle details
+    birthItem.addEventListener('click', toggleMilestoneDetails);
     milestoneList.appendChild(birthItem);
     
     // Display child milestones
@@ -300,6 +302,8 @@ function displayMilestoneTimeline(person) {
                     <h4>${milestone.name}</h4>
                     <p>${msData.description}</p>
                 `;
+                // Add click event to toggle details
+                item.addEventListener('click', toggleMilestoneDetails);
                 milestoneList.appendChild(item);
             }
         });
@@ -330,6 +334,8 @@ function displayMilestoneTimeline(person) {
                     <h4>${milestone.name}</h4>
                     <p>${msData.description}</p>
                 `;
+                // Add click event to toggle details
+                item.addEventListener('click', toggleMilestoneDetails);
                 milestoneList.appendChild(item);
             }
         });
@@ -344,8 +350,32 @@ function displayMilestoneTimeline(person) {
             <h4>Current Age</h4>
             <p>${person.name} is currently ${currentAge} years old</p>
         `;
+        // Add click event to toggle details
+        currentAgeItem.addEventListener('click', toggleMilestoneDetails);
         milestoneList.appendChild(currentAgeItem);
     }
+}
+
+// Function to toggle milestone details when clicked
+function toggleMilestoneDetails(event) {
+    // Get the clicked milestone item
+    const milestoneItem = event.currentTarget;
+    
+    // Check if any other milestone is expanded and collapse it first
+    document.querySelectorAll('.milestone-item.expanded').forEach(item => {
+        if (item !== milestoneItem) {
+            item.classList.remove('expanded');
+        }
+    });
+    
+    // Toggle the expanded class
+    milestoneItem.classList.toggle('expanded');
+    
+    // Add visual feedback for touch
+    milestoneItem.classList.add('touch-active');
+    setTimeout(() => {
+        milestoneItem.classList.remove('touch-active');
+    }, 200);
 }
 
 // Helper function to format months into readable age
